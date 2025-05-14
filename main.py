@@ -1,6 +1,8 @@
 import math
 import networkx as nx
 import matplotlib.pyplot as plt
+from collections import deque
+
 
 ajd_matrix = [
     [0, 1, 1, 0, 0],  
@@ -32,6 +34,43 @@ class Graph:
                     to_node = self.nodes[j]
                     from_node.out_neighbors.append(to_node)
                     to_node.in_neighbors.append(from_node)
+
+def eulerian_pathfind(graph):
+    """
+    returns: 
+         - None if no path
+         - []   if graph has no edges
+         - [v0, v1, ..., vk] the trail or circuit
+    """
+    out_deg = [len(n.out_neighbors) for n in graph.nodes]
+    in_deg = [len(n.in_neighbors) for n in graph.nodes]
+    
+    start_nodes = end_nodes = 0
+    start_id = 0
+    for i in range(graph.size):
+        diff = out_deg[i] - in_deg[i]
+        if diff == 1:
+            start_nodes += 1
+            start_id = i
+        elif diff == -1:
+            end_nodes += -1
+        elif diff != 0:
+            return None
+        
+    if not ((start_nodes == 0 and end_nodes == 0) or 
+            (start_nodes == 1 and end_nodes == 1)):
+        return None
+    
+    non_isolated_start = next((i for i in range(graph.size) 
+                               if in_deg[i] + out_deg[i] > 0), None)
+    
+    if non_isolated_start is None:
+        return []
+        
+    
+
+    
+
 
 
 '''test shit'''
