@@ -1,10 +1,8 @@
 import math
-import networkx as nx
-import matplotlib.pyplot as plt
 from collections import deque
 
-
-ajd_matrix = [
+'''test matrixes'''
+adj_matrix = [
     [0, 1, 1, 0, 0],  
     [0, 0, 1, 0, 0],  
     [1, 0, 0, 1, 0],  
@@ -12,6 +10,25 @@ ajd_matrix = [
     [0, 1, 0, 0, 0],  
 ]
 
+adj2_matrix = [
+    # 0  1  2  3  4
+    [0, 1, 0, 0, 0],  # 0 → 1
+    [0, 0, 0, 1, 0],  # 1 → 3
+    [1, 0, 0, 0, 0],  # 2 → 0
+    [0, 0, 0, 0, 1],  # 3 → 4
+    [0, 0, 1, 0, 0],  # 4 → 2
+]
+
+adj3_matrix = [
+    # 0  1  2  3  4
+    [0, 1, 0, 1, 0],  # 0 → 1, 0 → 3
+    [0, 0, 1, 0, 1],  # 1 → 2, 1 → 4
+    [1, 0, 0, 0, 1],  # 2 → 0, 2 → 4
+    [1, 0, 1, 0, 0],  # 3 → 0, 3 → 2
+    [0, 1, 0, 0, 0],  # 4 → 1
+]
+
+'''actual code start'''
 
 class Node:
     def __init__(self, id):
@@ -53,7 +70,7 @@ def eulerian_pathfind(graph):
             start_nodes += 1
             start_id = i
         elif diff == -1:
-            end_nodes += -1
+            end_nodes += 1
         elif diff != 0:
             return None
         
@@ -66,34 +83,40 @@ def eulerian_pathfind(graph):
     
     if non_isolated_start is None:
         return []
+    
+    def undirected_version(start):
+        seen = {start}
+        q = deque([start])
+        while q:
+            u = q.popleft()
+            for nbr in graph.nodes[u].out_neighbors + graph.nodes[u].in_neighbors:
+                if nbr.id not in seen:
+                    seen.add(nbr.id) 
+                    q.append(nbr.id)
+        return seen
         
+    reachable = undirected_version(non_isolated_start)
+    for i in range(graph.size):
+        if (in_deg[i] + out_deg[i] > 0) and (i not in reachable):
+            return None
     
-
+    if start_nodes == 0:
+        start_id = non_isolated_start
+        
+    local_out = {n.id: deque(n.out_neighbors) for n in graph.nodes}
+    stack = [start_id]
+    circuit = []
     
+    while stack:
+        u = stack[-1]
+        if local_out[u]:
+            v = local_out[u].popleft().id 
+            stack.append(v)
+        else:
+            circuit.append(stack.pop())
+    
+    return circuit[::-1]
 
-
-
-'''test shit'''
-
-##do not uncomment
-# def visualize_directed_graph(graph):
-#     G = nx.DiGraph()  # Directed graph
-
-#     # Add nodes
-#     for node in graph.nodes:
-#         G.add_node(node.id)
-
-#     # Add directed edges
-#     for from_node in graph.nodes:
-#         for to_node in from_node.out_neighbors:
-#             G.add_edge(from_node.id, to_node.id)
-
-#     # Draw
-#     pos = nx.spring_layout(G)  # or try: nx.circular_layout(G)
-#     nx.draw(G, pos, with_labels=True, arrows=True, node_color='lightblue', node_size=800, font_size=12, font_weight='bold')
-#     nx.draw_networkx_edges(G, pos, arrows=True, arrowstyle='->', arrowsize=20)
-#     plt.title("Directed Graph")
-#     plt.savefig("graph_output.png", dpi=300)
-
-# graph = Graph(ajd_matrix)
-# visualize_directed_graph(graph)
+graph = Graph(adj_matrix)
+trail = eulerian_pathfind(graph)
+print(trail)
