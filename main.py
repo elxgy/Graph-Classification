@@ -3,27 +3,27 @@ from collections import deque
 
 '''test matrixes'''
 adj_matrix = [
-    [0, 1, 1, 0, 0]  
-    [0, 0, 1, 0, 0]  
-    [1, 0, 0, 1, 0]  
-    [0, 0, 0, 1, 0]   
-    [0, 1, 0, 0, 0]  
+    [0, 1, 1, 0, 0],  
+    [0, 0, 1, 0, 0],  
+    [1, 0, 0, 1, 0],  
+    [0, 0, 0, 1, 0],   
+    [0, 1, 0, 0, 0],  
 ]
 
 adj2_matrix = [
-    [0, 1, 0, 0, 0]  
-    [0, 0, 0, 1, 0]  
-    [1, 0, 0, 0, 0]  
-    [0, 0, 0, 0, 1]  
-    [0, 0, 1, 0, 0]  
+    [0, 1, 0, 0, 0],  
+    [0, 0, 0, 1, 0],  
+    [1, 0, 0, 0, 0],  
+    [0, 0, 0, 0, 1],  
+    [0, 0, 1, 0, 0],  
 ]
 
 adj3_matrix = [
-    [0, 1, 0, 1, 0]  
-    [0, 0, 1, 0, 1]  
-    [1, 0, 0, 0, 1]  
-    [1, 0, 1, 0, 0]  
-    [0, 1, 0, 0, 0]  
+    [0, 1, 0, 1, 0],  
+    [0, 0, 1, 0, 1],  
+    [1, 0, 0, 0, 1],  
+    [1, 0, 1, 0, 0],  
+    [0, 1, 0, 0, 0],  
 ]
 
 '''actual code start'''
@@ -115,6 +115,47 @@ def eulerian_pathfind(graph):
     
     return circuit[::-1]
 
-graph = Graph(adj_matrix)
-trail = eulerian_pathfind(graph)
+graph1 = Graph(adj_matrix)
+graph2 = Graph(adj2_matrix)
+graph3 = Graph(adj3_matrix)
+trail = eulerian_pathfind(graph1)
 print(trail)
+
+
+def hamiltonian_pathfind(graph):
+    def backtrack(path, visited):
+        if len(path) == graph.size:
+            last = graph.nodes[path[-1]]
+            if graph.nodes[path[0]] in last.out_neighbors:
+                return path + [path[0]]
+            else:
+                return path
+            
+                
+        
+        last_node = path[-1]
+        for neighbor in graph.nodes[last_node].out_neighbors:
+            if neighbor.id not in visited:
+                visited.add(neighbor.id)
+                path.append(neighbor.id)
+                
+                result = backtrack(path, visited)
+                if result:
+                    return result
+                
+                path.pop()
+                visited.remove(neighbor.id)
+        return None
+
+    for start_node in range(graph.size):
+        visited = set([start_node])
+        path = [start_node]
+        result = backtrack(path, visited)
+        if result:
+            return result
+    
+    return None
+
+h_trail = hamiltonian_pathfind(graph1)
+print(h_trail)
+
