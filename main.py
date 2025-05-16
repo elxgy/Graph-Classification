@@ -1,5 +1,6 @@
 import math
 from collections import deque
+from itertools import permutations
 
 '''test matrixes'''
 adj_matrix = [
@@ -121,18 +122,20 @@ graph3 = Graph(adj3_matrix)
 trail = eulerian_pathfind(graph1)
 print(trail)
 
-
+#first version o hamiltonian pathfind that will be split in heuristic and exact version
+'''
 def hamiltonian_pathfind(graph):
     def backtrack(path, visited):
         if len(path) == graph.size:
             last = graph.nodes[path[-1]]
+            
             if graph.nodes[path[0]] in last.out_neighbors:
                 return path + [path[0]]
+            
             else:
                 return path
-            
-                
-        
+
+
         last_node = path[-1]
         for neighbor in graph.nodes[last_node].out_neighbors:
             if neighbor.id not in visited:
@@ -140,17 +143,20 @@ def hamiltonian_pathfind(graph):
                 path.append(neighbor.id)
                 
                 result = backtrack(path, visited)
+                
                 if result:
                     return result
                 
                 path.pop()
                 visited.remove(neighbor.id)
+                
         return None
 
     for start_node in range(graph.size):
         visited = set([start_node])
         path = [start_node]
         result = backtrack(path, visited)
+        
         if result:
             return result
     
@@ -158,4 +164,30 @@ def hamiltonian_pathfind(graph):
 
 h_trail = hamiltonian_pathfind(graph1)
 print(h_trail)
+'''
+def hamiltonian_exact_pathfind(graph):
+    
+    paths = []
+    for perm in permutations(range(graph.size)):
+        valid = True
+        
+        for u, v in zip(perm, perm[1:]):
+            if graph.nodes[v] not in graph.nodes[u].out_neighbors:
+                valid = False
+                break
+            
+        if not valid:
+            continue
 
+        if graph.nodes[perm[0]] in graph.nodes[perm[-1]].out_neighbors:
+            paths.append(list(perm) + [perm[0]])
+            
+        else:
+            paths.append(list(perm))
+
+    return paths
+
+print(hamiltonian_exact_pathfind(graph1))
+
+
+# def hamiltonian_heuristic_pathfind(graph):
