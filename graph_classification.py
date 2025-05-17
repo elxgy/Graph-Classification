@@ -166,7 +166,11 @@ h_trail = hamiltonian_pathfind(graph1)
 print(h_trail)
 '''
 def hamiltonian_exact_pathfind(graph):
-    
+    """
+        returns:
+            - if paths are possible -> all paths: [[], [], ... []]
+            - if no paths exist -> None
+    """
     paths = []
     for perm in permutations(range(graph.size)):
         valid = True
@@ -191,6 +195,12 @@ print(hamiltonian_exact_pathfind(graph2))
 
 
 def hamiltonian_heuristic_pathfind(graph, start=0):
+    """
+        returns:
+            - if any path is possible -> first path found [v1, v2, ... vk]
+            - if gets stuck due to next_node rules -> None
+            - if no paths exist -> None
+    """
     visited = set()
     path = [start]
     visited.add(start)
