@@ -2,7 +2,7 @@ import math
 from collections import deque
 from itertools import permutations
 
-'''test matrixes'''
+'''test matrixes
 adj_matrix = [
     [0, 1, 1, 0, 0],  
     [0, 0, 1, 0, 0],  
@@ -26,6 +26,7 @@ adj3_matrix = [
     [1, 0, 1, 0, 0],  
     [0, 1, 0, 0, 0],  
 ]
+'''
 
 '''actual code start'''
 
@@ -115,13 +116,6 @@ def eulerian_pathfind(graph):
             circuit.append(stack.pop())
     
     return circuit[::-1]
-
-graph1 = Graph(adj_matrix)
-graph2 = Graph(adj2_matrix)
-graph3 = Graph(adj3_matrix)
-trail = eulerian_pathfind(graph1)
-print(trail)
-
 #first version o hamiltonian pathfind that will be split in heuristic and exact version
 '''
 def hamiltonian_pathfind(graph):
@@ -191,8 +185,6 @@ def hamiltonian_exact_pathfind(graph):
 
     return paths
 
-print(hamiltonian_exact_pathfind(graph2))
-
 
 def hamiltonian_heuristic_pathfind(graph, start=0):
     """
@@ -230,6 +222,3 @@ def hamiltonian_heuristic_pathfind(graph, start=0):
         path.append(start)
         
     return path
-
-
-print(hamiltonian_heuristic_pathfind(graph2))
