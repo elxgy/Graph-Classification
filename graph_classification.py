@@ -226,7 +226,7 @@ def hamiltonian_heuristic_pathfind(graph, start=0):
         visited.add(next_node)
         current = next_node
         
-    if graph.nodes[start] in graph.nodes[current].out_neighbors:
+    if any(nbr.id == start for nbr in graph.nodes[current].out_neighbors):
         path.append(start)
         
     return path
