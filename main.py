@@ -187,7 +187,39 @@ def hamiltonian_exact_pathfind(graph):
 
     return paths
 
-print(hamiltonian_exact_pathfind(graph1))
+print(hamiltonian_exact_pathfind(graph2))
 
 
-# def hamiltonian_heuristic_pathfind(graph):
+def hamiltonian_heuristic_pathfind(graph, start=0):
+    visited = set()
+    path = [start]
+    visited.add(start)
+    
+    current = start
+    while len(path) < graph.size:
+        
+        next_node = None
+        min_options = float('inf')
+        
+        for neighbor in graph.nodes[current].out_neighbors:
+            if neighbor.id not in visited:
+                
+                options = sum(1 for nbr in neighbor.out_neighbors if nbr.id not in visited)
+                if options < min_options:
+                    min_options = options
+                    next_node = neighbor.id
+                    
+        if next_node is None:
+            return None
+        
+        path.append(next_node)
+        visited.add(next_node)
+        current = next_node
+        
+    if graph.nodes[start] in graph.nodes[current].out_neighbors:
+        path.append(start)
+        
+    return path
+
+
+print(hamiltonian_heuristic_pathfind(graph2))
