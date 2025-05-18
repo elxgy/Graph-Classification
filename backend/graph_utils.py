@@ -192,32 +192,43 @@ def hamiltonian_heuristic_pathfind(graph, start=0):
             - if gets stuck due to next_node rules -> None
             - if no paths exist -> None
     """
-    visited = set()
+    visited = set([start])
     path = [start]
-    visited.add(start)
     
+    def get_unvisited_count(node_id):
+        return sum(1 for nbr in graph.nodes[node_id].out_neighbors
+                   if nbr.id not in visited)
+        
+    neighbor_stack = []
     current = start
-    while len(path) < graph.size:
-        
-        next_node = None
-        min_options = float('inf')
-        
-        for neighbor in graph.nodes[current].out_neighbors:
-            if neighbor.id not in visited:
-                
-                options = sum(1 for nbr in neighbor.out_neighbors if nbr.id not in visited)
-                if options < min_options:
-                    min_options = options
-                    next_node = neighbor.id
-                    
-        if next_node is None:
-            return None
-        
-        path.append(next_node)
-        visited.add(next_node)
-        current = next_node
-        
-    if any(nbr.id == start for nbr in graph.nodes[current].out_neighbors):
-        path.append(start)
-        
-    return path
+    
+    neighbors = sorted(
+        [n.id for n in graph.nodes[current].out_neighbors if n.id not in visited],
+        key=get_unvisited_count
+    )
+    neighbor_stack.append(neighbors)
+    
+    while path:
+        current = path[-1]
+        if len(path) == graph.size:
+            if graph.nodes[start] in graph.nodes[current].out_neighbors:
+                return path + [start]
+
+            return path
+
+        if neighbor_stack[-1]:
+            next_id = neighbor_stack[-1].pop(0)
+            if next_id not in visited:
+                path.append(next_id)
+                visited.add(next_id)
+                new_neighbors = sorted(
+                    [n.id for n in graph.nodes[next_id].out_neighbors if n.id not in visited],
+                    key=get_unvisited_count
+                )
+                neighbor_stack.append(new_neighbors)
+        else:
+            neighbor_stack.pop()
+            removed = path.pop()
+            visited.remove(removed)
+    
+    return None
