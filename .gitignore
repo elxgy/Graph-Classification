@@ -227,3 +227,4 @@ dist-ssr
 static
 backend/test.txt
 frontend/package-lock.json
+test.txt
